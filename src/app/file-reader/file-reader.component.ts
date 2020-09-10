@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {FileSaverService} from 'ngx-filesaver';
+import { Component, OnInit } from '@angular/core';
+import { FileSaverService } from 'ngx-filesaver';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -21,16 +21,17 @@ export class FileReaderComponent implements OnInit {
     const file = ev.target.files[0];
     reader.onload = () => {
       const data = reader.result;
-      workBook = XLSX.read(data, {type: 'binary'});
+      workBook = XLSX.read(data, { type: 'binary' });
       const sheetName = workBook.SheetNames[0];
       const sheet = workBook.Sheets[sheetName];
-      const jsonSheet = XLSX.utils.sheet_to_json(sheet, {header: 1});
+      const jsonSheet = XLSX.utils.sheet_to_json(sheet, { header: 1 });
       console.log(jsonSheet);
-      const readers: Reader = {};
+      const readers: Readers = {};
       jsonSheet.forEach(row => {
         const book = new Book(row[0], row[1], row[2]);
         (row as []).forEach((col: string, i) => {
           if (i > 2) {
+            const name = col.trim();
             if (readers[col]) {
               readers[col].push(book);
             } else {
@@ -47,20 +48,30 @@ export class FileReaderComponent implements OnInit {
     reader.readAsBinaryString(file);
   }
 
-  writeToFile(readers: Reader): void {
-    const aoa = [];
+  writeToFile(readers: Readers): void {
+    const listOfReader: Reader[] = [];
+
     Object.entries(readers).forEach(([key, value]) => {
-      aoa.push([key]);
-      value.forEach(book => {
+      listOfReader.push({ name: key, books: value })
+    });
+
+    listOfReader.sort((a, b) => a.books.length - b.books.length);
+
+    const aoa = [];
+    listOfReader.forEach(reader => {
+      aoa.push([reader.name]);
+      reader.books.forEach(book => {
         aoa.push([`  ${book.name}`, book.year, book.amount]);
       });
-    });
+    })
+
+    aoa.push([]);
     const wb = XLSX.utils.book_new();
     wb.SheetNames.push('Sheet1');
     wb.Sheets.Sheet1 = XLSX.utils.aoa_to_sheet(aoa);
     console.log(aoa);
-    const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
-    const blob = new Blob([s2ab(wbout)], {type: 'application/octet-stream'});
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+    const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
     this.fileSaver.save(blob, 'test.xlsx');
   }
 
@@ -76,10 +87,13 @@ function s2ab(s): ArrayBuffer {
   return buf;
 }
 
-interface Reader {
+interface Readers {
   [key: string]: Book[];
 }
-
+class Reader {
+  name: string;
+  books: Book[];
+}
 class Book {
   constructor(name, year, amount) {
     this.name = name;

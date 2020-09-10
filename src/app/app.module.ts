@@ -2,10 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { FileReaderComponent } from './file-reader/file-reader.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    FileReaderComponent
   ],
   imports: [
     BrowserModule

@@ -41,9 +41,7 @@ export class FileReaderComponent implements OnInit {
         });
       });
       this.writeToFile(readers);
-      // const dataString = JSON.stringify(jsonData);
-      // document.getElementById('output').innerHTML = dataString.slice(0, 300).concat('...');
-      // this.setDownload(dataString);
+
     };
     reader.readAsBinaryString(file);
   }
@@ -53,11 +51,16 @@ export class FileReaderComponent implements OnInit {
 
     Object.entries(readers).forEach(([key, value]) => listOfReader.push({ name: key, books: value }));
 
-    listOfReader.sort((a, b) => b.books.length - a.books.length);
+    // listOfReader.sort((a, b) => b.books.length - a.books.length);
+    listOfReader.sort((a, b) => {
+      const textA = a.name.toUpperCase();
+      const textB = b.name.toUpperCase();
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
 
     const aoa = [];
     listOfReader.forEach(reader => {
-      aoa.push([reader.name]);
+      aoa.push([reader.name, reader.books.length]);
       reader.books.forEach(book => {
         aoa.push([`    ${book.name}`, book.year, book.amount]);
       });
@@ -67,7 +70,6 @@ export class FileReaderComponent implements OnInit {
     const wb = XLSX.utils.book_new();
     wb.SheetNames.push('Sheet1');
     wb.Sheets.Sheet1 = XLSX.utils.aoa_to_sheet(aoa);
-    console.log(aoa);
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
     const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
     this.fileSaver.save(blob, 'test.xlsx');

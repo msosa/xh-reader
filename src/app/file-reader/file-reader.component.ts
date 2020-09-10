@@ -52,7 +52,7 @@ export class FileReaderComponent implements OnInit {
     Object.entries(readers).forEach(([key, value]) => {
       aoa.push([key]);
       value.forEach(book => {
-        aoa.push([book.name, book.year, book.amount]);
+        aoa.push([`  ${book.name}`, book.year, book.amount]);
       });
     });
     const wb = XLSX.utils.book_new();

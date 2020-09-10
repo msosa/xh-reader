@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {FileSaverService} from 'ngx-filesaver';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -8,7 +9,7 @@ import * as XLSX from 'xlsx';
 })
 export class FileReaderComponent implements OnInit {
 
-  constructor() {
+  constructor(private fileSaver: FileSaverService) {
   }
 
   ngOnInit(): void {
@@ -58,8 +59,21 @@ export class FileReaderComponent implements OnInit {
     wb.SheetNames.push('Sheet1');
     wb.Sheets.Sheet1 = XLSX.utils.aoa_to_sheet(aoa);
     console.log(aoa);
+    const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
+    const blob = new Blob([s2ab(wbout)], {type: 'application/octet-stream'});
+    this.fileSaver.save(blob, 'test.xlsx');
   }
 
+}
+
+function s2ab(s): ArrayBuffer {
+  const buf = new ArrayBuffer(s.length); // convert s to arrayBuffer
+  const view = new Uint8Array(buf);  // create uint8array as viewer
+  for (let i = 0; i < s.length; i++) {
+    // tslint:disable-next-line:no-bitwise
+    view[i] = s.charCodeAt(i) & 0xFF;
+  } // convert to octet
+  return buf;
 }
 
 interface Reader {

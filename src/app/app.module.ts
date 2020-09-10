@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import {FileSaverModule} from 'ngx-filesaver';
 
 import { AppComponent } from './app.component';
 import { FileReaderComponent } from './file-reader/file-reader.component';
@@ -10,7 +11,8 @@ import { FileReaderComponent } from './file-reader/file-reader.component';
     FileReaderComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FileSaverModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -51,21 +51,19 @@ export class FileReaderComponent implements OnInit {
   writeToFile(readers: Readers): void {
     const listOfReader: Reader[] = [];
 
-    Object.entries(readers).forEach(([key, value]) => {
-      listOfReader.push({ name: key, books: value })
-    });
+    Object.entries(readers).forEach(([key, value]) => listOfReader.push({ name: key, books: value }));
 
-    listOfReader.sort((a, b) => a.books.length - b.books.length);
+    listOfReader.sort((a, b) => b.books.length - a.books.length);
 
     const aoa = [];
     listOfReader.forEach(reader => {
       aoa.push([reader.name]);
       reader.books.forEach(book => {
-        aoa.push([`  ${book.name}`, book.year, book.amount]);
+        aoa.push([`    ${book.name}`, book.year, book.amount]);
       });
-    })
+      aoa.push(['']);
+    });
 
-    aoa.push([]);
     const wb = XLSX.utils.book_new();
     wb.SheetNames.push('Sheet1');
     wb.Sheets.Sheet1 = XLSX.utils.aoa_to_sheet(aoa);
